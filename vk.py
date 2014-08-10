@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import httplib2, re
+import httplib2, re, os
 from urllib import urlencode
 from settings import user_id, email, password
 
@@ -78,12 +78,12 @@ class vkNApi():
         
         return response,body,self.headers['Cookie']
     
-    def get_dialogs(self,cookie, quantity = -1):
+    def get_dialogs(self,cookie):
         self.headers['Cookie'] = cookie
         dialogs = []
         flag = True
         offset = 0
-        while flag and quantity != 0:
+        while flag:
             data = {
                 "act": "a_get_dialogs",
                 "al": "1",
@@ -100,7 +100,6 @@ class vkNApi():
                 offset += 20
             else:
                 flag = False
-            quantity -= 1
         return list(set(dialogs))
 
     def get_audio(self, cookie):
@@ -116,14 +115,57 @@ class vkNApi():
         a = re.compile("(http.*?\.mp3)")
         return a.findall(b)
 
+    def download_photo_album(self, cookie, album_id):
+        self.headers['Cookie'] = cookie
+        response,body,cookie = self.get("http://vk.com/%s" % album_id)
+        all_photos = []
+        a = re.compile("<a\ href=\"(\/photo.*?)\"")
+
+        res = a.findall(body)
+        n = len(res)
+
+        #res = ['/photo22106310_290082175']
+
+        i = 1
+        for img in res:
+            r1, b1, c1 = self.get("http://vk.com%s" % img)
+            a1 = re.compile("w_src\"\:\"(.*?)\"")
+            a2 = re.compile("z_src\"\:\"(.*?)\"")
+            res2 = a1.findall(b1)
+            res2.extend(a2.findall(b1))
+
+            all_photos.extend(res2)
+            print i, "/", n, img
+            i += 1
+
+        ph = set(all_photos)
+        print len(ph), ph
+        try:
+            os.mkdir(album_id)
+        except:
+            pass
+
+        for img in ph:
+            try:
+                response,body,cookie = self.get(img.replace("\\",""))
+                with open(album_id + "/" + img[-14:],'wb') as f:
+                    f.write(body)
+            except:
+                pass
+
+        return ph
+
 if __name__ == "__main__":
     api = vkNApi()
     
     r,b,c = api.authenticate(email,password)
-
+    
     # Получаем список всех диалогов
-    dialogs = api.get_dialogs(c,10)
+    #dialogs = api.get_dialogs(c)
 
+    #api.download_photo_album(c, "album22106310_0")
+    api.download_photo_album(c, "album22106310_000")
 
+    print "Exit"
 
 
