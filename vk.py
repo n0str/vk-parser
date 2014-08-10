@@ -163,9 +163,6 @@ if __name__ == "__main__":
     # Получаем список всех диалогов
     #dialogs = api.get_dialogs(c)
 
-    #api.download_photo_album(c, "album22106310_0")
-    api.download_photo_album(c, "album22106310_000")
-
     print "Exit"
 
 
