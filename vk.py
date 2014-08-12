@@ -118,6 +118,24 @@ class vkNApi():
     def download_photo_album(self, cookie, album_id):
         self.headers['Cookie'] = cookie
         response,body,cookie = self.get("http://vk.com/%s" % album_id)
+
+
+        # Get amount of images
+        a = re.compile("<title>.*?\|.*?(\d+).*</title>")
+        try:
+            amount = int(a.findall(body)[0])
+        except:
+            amount = 0
+
+        pageCount = amount / 40 + (amount % 40 != 0)
+        for i in range(pageCount):
+            if (i+1) * 40 < amount:
+                print (i+1) * 40, "of", amount
+            else:
+                print amount, "of", amount
+        return []
+
+
         all_photos = []
         a = re.compile("<a\ href=\"(\/photo.*?)\"")
 
@@ -162,7 +180,7 @@ if __name__ == "__main__":
     
     # Получаем список всех диалогов
     #dialogs = api.get_dialogs(c)
-
+    api.download_photo_album(c, "album27053008_000")
     print "Exit"
 
 
