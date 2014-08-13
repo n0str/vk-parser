@@ -118,8 +118,10 @@ class vkNApi():
     def download_photo_album(self, cookie, album_id):
         self.headers['Cookie'] = cookie
         response,body,cookie = self.get("http://vk.com/%s" % album_id)
+        r = response
+        b = body
 
-
+        all_photos = []
         # Get amount of images
         a = re.compile("<title>.*?\|.*?(\d+).*</title>")
         try:
@@ -128,15 +130,28 @@ class vkNApi():
             amount = 0
 
         pageCount = amount / 40 + (amount % 40 != 0)
+        a = re.compile("<a\ href=\"(\/photo.*?)\"")
         for i in range(pageCount):
             if (i+1) * 40 < amount:
                 print (i+1) * 40, "of", amount
             else:
                 print amount, "of", amount
+
+            if i > 0:
+                data = {
+                    "al": "1",
+                    "offset": str( i * 40 ),
+                    "part": "1"
+                }
+                r,b,c = api.get('http://vk.com/%s' % album_id,"POST",data)
+            all_photos.extend(a.findall(b))
+
+        print "[test of amount]",  (len(set(all_photos)) == amount)
+        print all_photos
         return []
 
 
-        all_photos = []
+
         a = re.compile("<a\ href=\"(\/photo.*?)\"")
 
         res = a.findall(body)
