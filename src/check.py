@@ -15,6 +15,12 @@ class AllTests(unittest.TestCase):
         r,b,c = self.Api.get("http://vk.com")
         self.assertEqual(r["status"], '200')
 
+    def test_ip_address(self):
+        self.api = vkNApi()
+        r,b,c = self.api.get("http://icanhazip.com/", use_tor=True)
+        self.assertEqual(r["status"], '200')
+        print "[TOR_IP_ADDRESS]", b
+
     def testAuth(self):
         api = vkNApi()
         r,b,c = api.authenticate(self.params['email'], self.params['password'])

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import httplib2, re, os
-from urllib import urlencode
+import re, os
 from settings import user_id, email, password
+import network
 
 class vkNApi():
     profile = 0
@@ -22,25 +22,10 @@ class vkNApi():
     def __init__(self):
         pass
 
-    def get(self, url, http_type="GET", post={}):
-        Http = httplib2.Http()
-        if http_type == "POST":
-            self.headers["Content-type"] = "application/x-www-form-urlencoded"
-            response,body = Http.request(url, "POST", urlencode(post), headers=self.headers)
-        else:
-            self.headers["Content-type"] = ''
-            response,body = Http.request(url, headers=self.headers)
-
-        if "set-cookie" in response:
-            cookie = response["set-cookie"]
-        else:
-            cookie = ""
-
-        return response, body, cookie
+    def get(self, url, http_type="GET", post={}, use_tor=False):
+        return network.get(url, http_type, post, use_tor)
 
     def authenticate(self, email, password):
-        Http = httplib2.Http()
-
         # Загружаем главную страницу для получения cookie
         response, body, cookie = self.get("http://vk.com")
         self.headers['Cookie'] = cookie
