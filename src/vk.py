@@ -20,10 +20,10 @@ class vkNApi():
     }
 
     def __init__(self):
-        pass
+        self.use_tor = False
 
-    def get(self, url, http_type="GET", post={}, use_tor=False):
-        return network.get(url, http_type, post, use_tor)
+    def get(self, url, http_type="GET", post={}):
+        return network.get(url, http_type, post)
 
     def authenticate(self, email, password):
         # Загружаем главную страницу для получения cookie

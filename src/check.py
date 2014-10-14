@@ -2,7 +2,7 @@
 
 import unittest
 from vk import vkNApi
-from settings import user_id, email, password
+from settings import user_id, email, password, network_defaults
 
 class AllTests(unittest.TestCase):
 
@@ -17,7 +17,11 @@ class AllTests(unittest.TestCase):
 
     def test_ip_address(self):
         self.api = vkNApi()
-        r,b,c = self.api.get("http://icanhazip.com/", use_tor=True)
+
+        # If you want to use hidden network
+        network_defaults['use_tor'] = True
+        r,b,c = self.api.get("http://icanhazip.com/")
+
         self.assertEqual(r["status"], '200')
         print "[TOR_IP_ADDRESS]", b
 

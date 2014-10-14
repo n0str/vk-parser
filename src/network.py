@@ -3,9 +3,9 @@ import urllib2
 import httplib2
 import socks
 from urllib import urlencode
+from settings import network_defaults
  
 user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.7) Gecko/2009021910 Firefox/3.0.7'
-#httplib2.debuglevel = 4
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.0.'
             '13) Gecko/2009073022 Firefox/3.0.13 (.NET CLR 3.5.30729)',
@@ -25,8 +25,8 @@ def renew_connection():
     conn.send_signal("NEWNYM")
     conn.close()
 
-def get(url, http_type="GET", post= {}, use_tor=False):
-    if use_tor:
+def get(url, http_type="GET", post= {}):
+    if network_defaults['use_tor']:
         http = httplib2.Http(proxy_info=httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, 'localhost', 8118))
     else:
         http = httplib2.Http()
