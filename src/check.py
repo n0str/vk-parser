@@ -18,8 +18,9 @@ class AllTests(unittest.TestCase):
     def test_ip_address(self):
         self.api = vkNApi()
 
-        # If you want to use hidden network
-        network_defaults['use_tor'] = True
+        if network_defaults['use_tor'] == False:
+            return True
+
         r,b,c = self.api.get("http://icanhazip.com/")
 
         self.assertEqual(r["status"], '200')
