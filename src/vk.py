@@ -75,7 +75,7 @@ class vkNApi():
                 "offset": str(offset),
                 "unread": ""
             }
-            r,b,c = api.get('http://vk.com/al_im.php',"POST",data)
+            r,b,c = self.get('http://vk.com/al_im.php',"POST",data)
 
             a = re.compile("selectDialog\((\d+)\,")
             dialogs.extend(a.findall(b))
@@ -96,7 +96,7 @@ class vkNApi():
             'id':user_id,
             'please_dont_ddos':'2'
         }
-        r,b,c = api.get('http://vk.com/audio',"POST",data)
+        r,b,c = self.get('http://vk.com/audio',"POST",data)
         a = re.compile("(http.*?\.mp3)")
         return a.findall(b)
 
@@ -128,7 +128,7 @@ class vkNApi():
                     "offset": str( i * 40 ),
                     "part": "1"
                 }
-                r,b,c = api.get('http://vk.com/%s' % album_id,"POST",data)
+                r,b,c = self.get('http://vk.com/%s' % album_id,"POST",data)
             all_photos.extend(a.findall(b))
 
         print "[test of amount]",  (len(set(all_photos)) == amount)

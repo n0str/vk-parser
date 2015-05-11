@@ -10,5 +10,5 @@ class Scenarios():
 
         r,b,c = api.authenticate(email,password)
 
-        #api.download_photo_album(c, "album27053008_000")
+        api.download_photo_album(c, "album27053008_000")
         print "Exit"
