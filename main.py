@@ -34,8 +34,3 @@ if result.test:
 if result.run:
     runner = Scenarios()
     runner.testScenario()
-
-
-if True:
-    runner = Scenarios()
-    runner.testScenario()

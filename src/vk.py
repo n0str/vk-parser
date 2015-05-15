@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import re, os
 from settings import user_id, email, password
-import network
+from network import Network
 
 class vkNApi():
     profile = 0
@@ -23,7 +23,7 @@ class vkNApi():
         self.use_tor = False
 
     def get(self, url, http_type="GET", post={}):
-        return network.get(url, http_type, post)
+        return Network.get(url, http_type, post)
 
     def authenticate(self, email, password):
         # Загружаем главную страницу для получения cookie

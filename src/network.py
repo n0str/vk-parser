@@ -20,27 +20,31 @@ headers = {'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1; ru; rv:1.9.0.
             'Content-Type': 'application/x-www-form-urlencoded',
         }
 
-def renew_connection():
-    conn = TorCtl.connect(controlAddr="127.0.0.1", controlPort=9051, passphrase="your_password")
-    conn.send_signal("NEWNYM")
-    conn.close()
+class Network():
 
-def get(url, http_type="GET", post= {}):
-    if network_defaults['use_tor']:
-        http = httplib2.Http(proxy_info=httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, 'localhost', 8118))
-    else:
-        http = httplib2.Http()
+    @staticmethod
+    def renew_connection():
+        conn = TorCtl.connect(controlAddr="127.0.0.1", controlPort=9051, passphrase="your_password")
+        conn.send_signal("NEWNYM")
+        conn.close()
 
-    if http_type == "POST":
-        headers["Content-type"] = "application/x-www-form-urlencoded"
-        response,body = http.request(url, "POST", urlencode(post), headers=headers)
-    else:
-        headers["Content-type"] = ''
-        response,body = http.request(url, headers=headers)
+    @staticmethod
+    def get(url, http_type="GET", post= {}):
+        if network_defaults['use_tor']:
+            http = httplib2.Http(proxy_info=httplib2.ProxyInfo(socks.PROXY_TYPE_HTTP, 'localhost', 8118))
+        else:
+            http = httplib2.Http()
 
-    if "set-cookie" in response:
-        cookie = response["set-cookie"]
-    else:
-        cookie = ""
+        if http_type == "POST":
+            headers["Content-type"] = "application/x-www-form-urlencoded"
+            response,body = http.request(url, "POST", urlencode(post), headers=headers)
+        else:
+            headers["Content-type"] = ''
+            response,body = http.request(url, headers=headers)
 
-    return response, body, cookie
+        if "set-cookie" in response:
+            cookie = response["set-cookie"]
+        else:
+            cookie = ""
+
+        return response, body, cookie
