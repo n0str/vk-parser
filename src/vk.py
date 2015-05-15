@@ -100,6 +100,49 @@ class vkNApi():
         a = re.compile("(http.*?\.mp3)")
         return a.findall(b)
 
+    def download_photo_variants(self, cookie, photo_id, choose_type="all", get_photo=False):
+        self.headers['Cookie'] = cookie
+        response,body,cookie = self.get("https://vk.com/%s" % photo_id)
+
+        try:
+            os.mkdir("photos/%s" % photo_id)
+        except:
+            pass
+
+
+        index = body.find("pv_comment")
+        index_end = body.find("commcount", index)
+
+        a = re.compile("(\w)_src\"\:\"(.*?)\"")
+        imgs = [(img_type, img) for img_type, img in a.findall(body[index:index_end])]
+        imgs_types = [img_type for img_type, img in imgs]
+
+        types = ["z", "y", "x", "r", "q", "p", "o"]
+        current_type = types[0]
+        if choose_type == "max":
+            for current_type_2 in types:
+                current_type = current_type_2
+                if current_type_2 in imgs_types:
+                    break
+            types = [current_type]
+
+        for img_type, img in imgs:
+            if not img_type in types:
+                continue
+            try:
+                response,body,cookie = self.get(img.replace("\\",""))
+                if response["status"] == "200":
+                    name = img_type + "_src_" +img[-14:]
+
+                    if get_photo:
+                        return name, body
+                    else:
+                        print name
+                        with open("photos/%s/%s" % (photo_id, name), 'wb') as f:
+                            f.write(body)
+            except:
+                pass
+
     def download_photo_album(self, cookie, album_id):
         self.headers['Cookie'] = cookie
         response,body,cookie = self.get("http://vk.com/%s" % album_id)
@@ -132,7 +175,22 @@ class vkNApi():
             all_photos.extend(a.findall(b))
 
         print "[test of amount]",  (len(set(all_photos)) == amount)
-        print all_photos
+
+        try:
+            os.mkdir(album_id)
+        except:
+            pass
+
+        for img in all_photos:
+            try:
+                print img[1:]
+                get_name, get_img = self.download_photo_variants(c, img[1:], "max", get_photo=True)
+                with open("%s/%s" % (album_id, get_name), 'wb') as f:
+                    f.write(body)
+            except:
+                pass
+
+
         return []
 
 
@@ -181,6 +239,7 @@ if __name__ == "__main__":
     # Получаем список всех диалогов
     #dialogs = api.get_dialogs(c)
     api.download_photo_album(c, "album27053008_000")
+    # api.download_photo_variants(c, "photo27053008_291919354", "max")
     print "Exit"
 
 
